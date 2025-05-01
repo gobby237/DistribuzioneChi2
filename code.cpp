@@ -51,11 +51,18 @@ int main ()
 
     int N = 0;
     double q = 0;  
+    double cl = 0; 
 
+    cout << "*********************************************************************************" << endl; 
+    cout << "******     PROGRAMMA PER LA STIMA DELLA DISTRIBUZIONE DEL CHI QUADRO       ******" << endl; 
+    cout << "*********************************************************************************" << endl; 
+    cout << "I dati contenenti i chi quadri e le rispettive probabilità saranno salvati in due colonne all'interno del file di nome - isto.txt -"<< endl; 
+    cout << "Selezionare il numero di dati (GDL + 2): "; 
+    cin >> N; 
     cout << "Quante iterazioni vuoi? "; 
     cin >> q; 
-    cout << "Inserire numero di GDL (N-2): "; 
-    cin >> N; 
+    cout << "Si inserisca il livello di confidenza (da 0 a 1): "; 
+    cin >> cl; 
 
     vector <double> y (N,0); // vettore contenente N numeri che stanno sulla retta y = 3x + 2 per esempio  
     vector <double> ey (N,0); // errori gaussiani sulle y 
@@ -135,6 +142,47 @@ int main ()
         out << (min + (i*bin) + (min + ((i+1)*bin)))/2 << " " << cont.at(i)/(q*bin) << "\n "; 
     }
 
+    // visualizzazione approx della distribuzione! 
+
+    // calcolo area totale grafico 
+
+    double S = 0; 
+
+    for (int i = 0; i < num; i ++ )
+    {
+        S += bin*cont.at(i); 
+    }
+
+    // calcolo della probabilità cumulativa 
+
+    double test = 0; 
+    cout << "Inserire valore del chi quadro: "; 
+    cin >> test; 
+
+    int r = (test - min)/bin; // quando mi devo fermare per la conta
+
+    double F = 0; 
+    for (int i = 0; i < r; i ++ )
+    {
+        F += bin*cont.at(i); 
+    }
+
+    // quindi la probabilità di avere valori compatibili con quel chi quadro vale 
+
+    cout << "La p. cumulativa per " << test << " vale: " << F/S*100 << "% " << endl;
+    cout << "Il p-value (errore di prima specie) vale: " << (double) 1 - (F/S) << endl; 
+    if (F/S > cl)
+    {
+        cout << "Con il CL = " << cl << " il test del chi quadro non è passato :(" << endl; 
+        cout << "La probabilità che questa affermazione sia sbagliata è del " << (double) (1 - (F/S)) * 100 << "%" << endl; 
+    }
+    else
+    { 
+        cout << "Con il CL = " << cl << " il test del chi quadro è passato :) " << endl;  
+    }
+
+
+    
 
     return 0; 
 }
